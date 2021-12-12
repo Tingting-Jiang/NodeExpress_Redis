@@ -87,31 +87,31 @@ async function query5() {
 
     // add Hash Part
 
-    // const queryIDs = [
-    //   {
-    //     '$project': {
-    //       '_id': 1
-    //     }
-    //   }
-    // ];
+    const queryIDs = [
+      {
+        '$project': {
+          '_id': 1
+        }
+      }
+    ];
 
 
 
     
-    // const allIDs = await tweetCollection.aggregate(queryIDs).toArray();
+    const allIDs = await tweetCollection.aggregate(queryIDs).toArray();
 
-    // for (const id of allIDs) {
-    //   const tweet = await tweetCollection.find({"_id": ObjectId(id._id)}, {"_id": 0}).toArray();
+    for (const id of allIDs) {
+      const tweet = await tweetCollection.find({"_id": ObjectId(id._id)}, {"_id": 0}).toArray();
 
-    //   await redisClient.sendCommand(["HSET", `tweet:${id._id}`, 
-    //     "userName", `${tweet[0].user.name}`,
-    //     "userScreenName", `${tweet[0].user.screen_name}`,
-    //     "favoriteCount", `${tweet[0].favorite_count}`,
-    //     "text", `${tweet[0].text}`,
-    //     "creaeteAt", `${tweet[0].created_at}`,
-    //   ]);
+      await redisClient.sendCommand(["HSET", `tweet:${id._id}`, 
+        "userName", `${tweet[0].user.name}`,
+        "userScreenName", `${tweet[0].user.screen_name}`,
+        "favoriteCount", `${tweet[0].favorite_count}`,
+        "text", `${tweet[0].text}`,
+        "creaeteAt", `${tweet[0].created_at}`,
+      ]);
 
-    // }
+    }
     console.log("Done!");
 
 

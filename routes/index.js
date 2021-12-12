@@ -43,7 +43,7 @@ router.post("/tweet/create", async function (req, res) {
     "userName": req.body.userName, 
     "userScreenName": req.body.userName,
     "text": req.body.text,
-    "creaeteAt": new Date().toLocaleString(),
+    "creaeteAt": Date.now(),
     "favoriteCount": req.body.favoriteCount,
   };
 
@@ -70,7 +70,9 @@ router.post("/tweet/delete", async function (req, res) {
 
   const id = req.body._id;
 
-  console.log("got delete tweet", id);
+
+
+  console.log("got delete tweet", id. userName);
 
   await myDB.deleteTweet(id);
 

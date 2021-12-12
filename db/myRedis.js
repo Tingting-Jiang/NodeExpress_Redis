@@ -54,7 +54,7 @@ async function getTweetByID(tweetID) {
 
 
     const userName = await redisClient.sendCommand(["HGET", `tweet:${tweetID}`, 
-      "userScreenName"]);
+      "userName"]);
 
     const text = await redisClient.sendCommand(["HGET", `tweet:${tweetID}`, 
       "text"]);
@@ -62,7 +62,7 @@ async function getTweetByID(tweetID) {
     const favoriteCount = await redisClient.sendCommand(["HGET", `tweet:${tweetID}`, 
       "favoriteCount"]);
 
-    const singleItem = {"_id": tweetID[0], 
+    const singleItem = {"_id": tweetID, 
       "userName": userName, 
       "text": text, 
       "favoriteCount":favoriteCount }; 
@@ -93,8 +93,18 @@ async function deleteTweet(tweetID) {
     await redisClient.connect();
     console.log("Connnected to Redis");
 
+    const userName = await redisClient.sendCommand(["HGET", `tweet:${tweetID}`, 
+      "userName"]);
 
-    return await redisClient.sendCommand(["HDEL", `tweet:${tweetID}`]);  
+    console.log("get user name to delete", userName);
+
+    await redisClient.del(`tweet:${tweetID}`);
+
+
+    await redisClient.sendCommand(["ZINCRBY", "leaderboard", "-1", `${userName}`]);
+
+    await redisClient.sendCommand(["RPOP", `tweets:${userName}`]);
+
 
   } finally {
     await redisClient.quit();
@@ -166,13 +176,13 @@ async function getTweet() {
 
       const tweetID = await redisClient.sendCommand(["LRANGE", `tweets:${user}`, "-1", "-1"]);
 
-      // console.log("the latest tweet id is: ", tweetID);
+      console.log("the latest tweet id is: ", tweetID);
 
 
       const userName = await redisClient.sendCommand(["HGET", `tweet:${tweetID[0]}`, 
         "userName"]);
 
-      // console.log("user name is", userName);
+      console.log("user name is", userName);
 
       const text = await redisClient.sendCommand(["HGET", `tweet:${tweetID[0]}`, 
         "text"]);

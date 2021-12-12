@@ -30,7 +30,7 @@
                     Posted by: <%= t.userName %> 
                   </p>
                   <p> FavoriteCount: <%= t.favoriteCount %> </p>
-                  <p> Twiter Content: ﹩<%= t.text %></p>
+                  <p> Twiter Content: <%= t.text %></p>
                                    
                  <form action="/tweet/delete" method="POST">
                 <input type="hidden" name="_id" value="<%= t._id %>">

@@ -135,12 +135,36 @@ async function updateTweet(tweetID, newTweet) {
     await redisClient.connect();
     console.log("Connnected to Redis");
 
+    const oldName = await redisClient.sendCommand(["HGET", `tweet:${tweetID}`, 
+      "userName"]);
+
+    const newName = newTweet.userName;
+
 
     await redisClient.sendCommand(["HSET", `tweet:${tweetID}`, 
-      "userName", `${newTweet.userName}`,
+      "userName", `${newName}`,
       "favoriteCount", `${newTweet.favoriteCount}`,
       "text", `${newTweet.text}`
     ]);  
+
+
+    if (oldName !== newName){
+
+      const oldScore = await redisClient.sendCommand(["ZSCORE", `leaderboard`, `${oldName}`]);
+
+
+      await redisClient.zAdd("leaderboard", {score: `${oldScore}`, value: `${newName}`});
+
+      await redisClient.sendCommand(["ZREM", "leaderboard",`${oldName}`]);
+
+
+      await redisClient.sendCommand(["RENAME", `tweets:${oldName}`, `tweets:${newName}`]);
+
+      await redisClient.del(`tweets:${oldName}`);
+    }
+  
+
+
 
   } finally {
     await redisClient.quit();
